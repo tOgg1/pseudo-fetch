@@ -8,7 +8,7 @@ import Headers from './headers';
  * all properties are implemented, and all mutating methods are implemented. None of the
  * Body-inherited methods are implemented, but is readily available after toWindowResponse is called.
  */
-export default class Response {
+class Response {
 
   /**
    * Constructor of the pseudoresponse.
@@ -211,4 +211,62 @@ export default class Response {
   error() {
     throw new Error(`Connection refused: ${this.url}`);
   }
+
+  /**
+   * Returns an arrayBuffer representation of the body, if possible.
+   *
+   * Currently not implemented.
+   */
+  arrayBuffer() {
+    throw new Error('arrayBuffer not implemented');
+  }
+
+  /**
+   * Returns a blob-representation of the body, if possible.
+   *
+   * Currently not implemented.
+   */
+  blob() {
+    throw new Error('arrayBuffer not implemented');
+  }
+
+  /**
+   * Returns a formData-representation of the body, if possible.
+   *
+   * Currently not implemented.
+   */
+  formData() {
+    throw new Error('formData not implemented');
+  }
+
+  /**
+   * Returns a json-representation of the body, wrapped in a Promise, if possible.
+   * @return {Promise} A promise which resolves with a json representation of the body.
+   */
+  json() {
+    return new Promise((resolve, reject) => {
+      try {
+        let parsed = JSON.parse(this.body || '');
+        resolve(parsed);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  /**
+   * Returns a text-representation of the body, wrapped in a Promise, if possible.
+   * @return {Promise}  A promise which resolves with a text-representation of the body.
+   */
+  text() {
+    return new Promise((resolve, reject) => {
+      try {
+        resolve((this.body || '').toString());
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 }
+
+export default Response;
