@@ -1,26 +1,28 @@
-import PseudoResponse from './pseudoresponse';
-import PseudoRequest from './pseudorequest';
+import Response from './response';
+import Request from './request';
+import Headers from './headers';
 
 /**
  * This class represents an endpoint that can be called.
- * @class  PseudoEndpoint
+ * @class Endpoint
  */
-export default class PseudoEndpoint {
+export default class Endpoint {
 
   /**
-   * Constructs a PseudoEndpoint instance.
+   * Constructs a Endpoint instance.
    *
-   * @param  {string} url    Url of the endpoint
-   * @param  {string} method Method to listen for, typically GET, POST, PATCH, OPTIONS etc.
+   * @param  {string} url                       Url of the endpoint
+   * @param  {string} method                    Method to listen for, typically GET, POST, PATCH, OPTIONS etc.
+   * @param  {Function|Any?} responseFunction   Responsefunction. Optional argument.
    */
-  constructor(url, method) {
-    this.url = url;
-    this.method = method;
+  constructor(url, method, responseFunction) {
+    this.url = url || '/';
+    this.method = method || 'GET';
     this.acceptFunctions = [];
     this.rejectFunctions = [];
-    this.status = 200;
-    this.responseHeaders = new Headers();
-    this.responseFunction = (req, res) => 'Hello world';
+    this._status = 200;
+    this.headers = new Headers();
+    this.responseFunction = responseFunction || ((req, res) => 'Hello world');
   }
 
   /**
@@ -30,7 +32,7 @@ export default class PseudoEndpoint {
    *
    * @param  {Function}        condition The conditional function to check for
    *                                     The function should accept two parameters: url and config
-   * @return {PseudoEndpoint}            This
+   * @return {Endpoint}            This
    */
   include(condition) {
     this.acceptFunctions.push(condition);
@@ -43,7 +45,7 @@ export default class PseudoEndpoint {
    * the call will fail with a 400 Bad Request.
    *
    * @param  {Function}       condition The conditiaonl function to check for
-   * @return {PseudoEndpoint}           This
+   * @return {Endpoint}           This
    */
   exclude(condition) {
     this.rejectFunctions.push(condition);
@@ -57,10 +59,10 @@ export default class PseudoEndpoint {
    *
    * @param {string}          key      Header key
    * @param {string}          value    Header value
-   * @return {PseudoEndpoint}          this
+   * @return {Endpoint}          this
    */
   setHeader(key, value) {
-    this.responseHeaders.append(key, value);
+    this.headers.append(key, value);
     return this;
   }
 
@@ -68,7 +70,7 @@ export default class PseudoEndpoint {
    * Defines the response to give when this endpoint is (succesfully) called.
    *
    * @param  {Function}       responseFunction The response function of the endpoint
-   * @return {PseudoEndpoint}                  this
+   * @return {Endpoint}                  this
    */
   respond(responseFunction) {
     this.responseFunction = responseFunction;
@@ -79,40 +81,32 @@ export default class PseudoEndpoint {
    * Alias for respond.
    *
    * @param  {Function}       responseFunction The response function of the endpoint
-   * @return {PseudoEndpoint}                  this
+   * @return {Endpoint}                  this
    */
   send(responseFunction) {
-    return respond(responseFunction);
+    return this.respond(responseFunction);
   }
 
   /**
-   * Returns the status of this endpoint.
+   * Sets the status of this endpoint.
    *
-   * @return {Number} Status code
+   * @param {int} status The status of this endpoint.
+   * @return {Endpoint}                  this
    */
-  get status() {
-    return this.status;
-  }
-
-  /**
-   * Sets the status to return.
-   * @param  {Number} status A status
-   * @return {[type]}        [description]
-   */
-  set status(status) {
-    this.status = status;
+  status(status) {
+    this._status = status;
     return this;
   }
 
   /**
    * Shortcut for setting the contentType header.
    *
-   * @param  {[type]} type [description]
-   * @return {[type]}      [description]
+   * @param  {String}   type  The contentType value.
+   * @return {Endpoint}       this
    */
   contentType(type) {
     this.setHeader('Content-Type', type);
-    return type;
+    return this;
   }
 
   /**
@@ -126,27 +120,32 @@ export default class PseudoEndpoint {
    * @return {Response}           Epic
    */
   _call(url, config) {
-    let request = new PseudoRequest();
-    let response = new PseudoResponse();
+    return new Promise((resolve, reject) => {
+      let request = new Request();
+      let response = new Response();
 
-    // Check for validity through accept and reject conditions
-    for (let i = 0; i < this.acceptFunctions.length; i++) {
-      if (typeof this.acceptFunctions !== 'function' ||
-          !this.acceptFunctions(url, config)) {
-        return response.toWindowResponse().error();
+
+      // Check for validity through accept and reject conditions
+      for (let i = 0; i < this.acceptFunctions.length; i++) {
+        if (typeof this.acceptFunctions[i] !== 'function' ||
+            !this.acceptFunctions[i](url, config)) {
+          reject(response.error());
+        }
       }
-    }
 
-    for (let i = 0; i < this.rejectFunctions.length; i++) {
-      if (typeof this.rejectFunctions !== 'function' ||
-          !!this.rejectFunctions(url, config)) {
-        return response.toWindowResponse().error();
+      for (let i = 0; i < this.rejectFunctions.length; i++) {
+        if (typeof this.rejectFunctions[i] !== 'function' ||
+            !!this.rejectFunctions[i](url, config)) {
+          reject(response.error());
+        }
       }
-    }
 
-    // Okey, we are good, lets run the request.
-    response.status = this.status;
-    _callResponseFunction(request, response);
+      // Okey, we are good, lets run the request.
+      response.status = this._status;
+      response.headers = this.headers;
+      this._callResponseFunction(request, response);
+      resolve(response);
+    });
   }
 
   /**
@@ -154,8 +153,8 @@ export default class PseudoEndpoint {
    * it will be called. If it is anything else, it will be interpreted as the body
    * to return.
    *
-   * @param  {PseudoRequest}  request  The request object of the call
-   * @param  {PseudoResponse} response The response object of the call.
+   * @param  {Request}  request  The request object of the call
+   * @param  {Response} response The response object of the call.
    */
   _callResponseFunction(request, response) {
     if (typeof this.responseFunction === 'function') {
