@@ -7,7 +7,7 @@ import {
   mock,
   restore,
   overloadUrlconfig,
-} from '../../src/pseudofetch.js';
+} from '../src/index.js';
 
 describe('pseudofetch', () => {
   beforeEach(() => {
