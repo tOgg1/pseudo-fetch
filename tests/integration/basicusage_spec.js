@@ -1,6 +1,5 @@
 /* global describe, it, before, beforeEach, after, afterEach */
 import {expect} from 'chai';
-import {Map, List, fromJS} from 'immutable';
 
 import PseudoFetch from '../../src/index.js';
 
