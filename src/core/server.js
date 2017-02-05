@@ -1,4 +1,5 @@
 import Endpoint from './endpoint';
+import Response from './response';
 
 /**
  * Creates an endpoint hash.
@@ -29,25 +30,25 @@ export default class Server {
    */
   constructor(config) {
     this.config = config;
-    this.paths = {};
+    this.endpoints = {};
   }
 
   /**
    * Registers a new route with the server. The method simply creates a new
-   * PseudoEndpoint-instance, and adds it to the paths-dict of this server.
+   * Endpoint-instance, and adds it to the endpoints-dict of this server.
    *
    * @param  {String} url     The url of the endpoint.
    * @param  {String} method  The method it accepts requests to. Typically GET/POST etc.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
-  route(url, method) {
-    const endpoint = new PseudoEndpoint(url, method);
+  route(url='', method='GET') {
+    const endpoint = new Endpoint(url, method);
     const hash = createEndpointHash(url, method);
-    if (hash in this.paths) {
+    if (hash in this.endpoints) {
       console.warn(`Overwriting ${hash}`);
     }
 
-    this.paths[createEndpointHash(url, method)] = endpoint;
+    this.endpoints[createEndpointHash(url, method)] = endpoint;
     return endpoint;
   }
 
@@ -55,69 +56,72 @@ export default class Server {
    * Alias for route(url, 'GET').
    *
    * @param  {String} url     The url of the endpoint.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
   get(url) {
-    return route(url, 'GET');
+    return this.route(url, 'GET');
   }
 
   /**
    * Alias for route(url, 'POSt').
    *
    * @param  {String} url     The url of the endpoint.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
   post(url) {
-    return route(url, 'POST');
+    return this.route(url, 'POST');
   }
 
   /**
    * Alias for route(url, 'PATCH').
    *
    * @param  {String} url     The url of the endpoint.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
   patch(url) {
-    return route(url, 'PATCH');
+    return this.route(url, 'PATCH');
   }
 
   /**
    * Alias for route(url, 'PUT').
    *
    * @param  {String} url     The url of the endpoint.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
   put(url) {
-    return route(url, 'PUT');
+    return this.route(url, 'PUT');
   }
 
   /**
    * Alias for route(url, 'DELETE').
    *
    * @param  {String} url     The url of the endpoint.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
   delete(url) {
-    return route(url, 'DELETE');
+    return this.route(url, 'DELETE');
   }
 
   /**
    * Alias for route(url, 'OPTIONS').
    *
    * @param  {String} url     The url of the endpoint.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
   options(url) {
-    return route(url, 'OPTIONS');
+    return this.route(url, 'OPTIONS');
   }
 
   /**
    * Alias for route(url, 'HEAD').
    *
    * @param  {String} url     The url of the endpoint.
-   * @return {PseudoEndpoint} The resulting endpoint.
+   * @return {Endpoint} The resulting endpoint.
    */
   head(url) {
+    return this.route(url, 'HEAD');
+  }
+
   _call(url='', config={}) {
     const endpointHash = createEndpointHash(url, config.method || 'GET');
     const endpoint = this.endpoints[endpointHash];
