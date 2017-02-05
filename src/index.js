@@ -5,7 +5,7 @@
  * @module PseudoFetch
  */
 import parse from 'url-parse';
-import PseudoServer from './core/pseudoserver';
+import Server from './core/server';
 
 /**
  * A simple object holding all our registered servers.
@@ -125,15 +125,15 @@ export function overloadUrlconfig(arg0, arg1, arg2) {
  * @param  {undefined|null|string}    arg1 The second argument, possibly a port.
  * @param  {undefined|null|string}    arg2 The third argument. Either undefined, null or a string representing
  *                                             the protocol.
- * @return {PseudoServer}                  A PseudoServer instance.
+ * @return {Server}                  A Server instance.
  */
 export default function(arg0, arg1, arg2) {
   const urlConfig = overloadUrlconfig(arg0, arg1, arg2);
-  const pseudoServer = new PseudoServer(urlConfig);
+  const pseudoServer = new Server(urlConfig);
   serverStore[urlConfig] = pseudoServer;
 
   // We automatically mock if we haven't mocked before.
-  // This makes our API easier, as we can just create a new PseudoServer instance,
+  // This makes our API easier, as we can just create a new Server instance,
   // and everything is taken care for us.
   // Note that originalFetch will never be undefined after the first mock, so for every
   // restore() after this call, one has to call mock() explicitly.
