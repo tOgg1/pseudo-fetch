@@ -58,7 +58,7 @@ export function fetch(url, config) {
     throw new Error(`Connection refused, no server listening on ${JSON.stringify(urlHash)}`);
   }
 
-  return registeredServer._call(parsedUrl.path, config);
+  return registeredServer._call(parsedUrl.pathname, config);
 }
 
 /**
@@ -130,7 +130,7 @@ export function overloadUrlconfig(arg0, arg1, arg2) {
 export default function(arg0, arg1, arg2) {
   const urlConfig = overloadUrlconfig(arg0, arg1, arg2);
   const pseudoServer = new Server(urlConfig);
-  serverStore[urlConfig] = pseudoServer;
+  serverStore[createUrlConfigHash(urlConfig)] = pseudoServer;
 
   // We automatically mock if we haven't mocked before.
   // This makes our API easier, as we can just create a new Server instance,
