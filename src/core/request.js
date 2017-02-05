@@ -130,8 +130,15 @@ import Headers from './headers';
   json() {
     return new Promise((resolve, reject) => {
       try {
-        let parsed = JSON.parse(this.body || '');
-        resolve(parsed);
+        // If we already have a parsed json-object, return it
+        if (this.body.constructor === Object) {
+          resolve(this.body);
+        } else if(this.body) {
+          let parsed = JSON.parse(this.body || '');
+          resolve(parsed);
+        } else {
+          reject('Body is empty');
+        }
       } catch (e) {
         reject(e);
       }
