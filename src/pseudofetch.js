@@ -5,7 +5,7 @@
  * @module PseudoFetch
  */
 import parse from 'url-parse';
-import PseudoServer from './server';
+import PseudoServer from './core/pseudoserver';
 
 /**
  * A simple object holding all our registered servers.
@@ -58,7 +58,7 @@ export function fetch(url, config) {
     throw new Error(`Connection refused, no server listening on ${JSON.stringify(urlHash)}`);
   }
 
-  return registeredServer._call(url, config);
+  return registeredServer._call(parsedUrl.path, config);
 }
 
 /**
@@ -121,15 +121,24 @@ export function overloadUrlconfig(arg0, arg1, arg2) {
  * The default export for this module. And the main entry-point
  * for creating new pseudo-servers.
  *
- * @param  {undefined|string|Object}  arg0 The first argument, either a full config, or a hostname.
+ * @param  {undefined|null|string|Object}  arg0 The first argument, either a full config, or a hostname.
  * @param  {undefined|null|string}    arg1 The second argument, possibly a port.
- * @param  {null|undefined|string}    arg2 The third argument. Either undefined, null or a string representing
+ * @param  {undefined|null|string}    arg2 The third argument. Either undefined, null or a string representing
  *                                             the protocol.
  * @return {PseudoServer}                  A PseudoServer instance.
  */
 export default function(arg0, arg1, arg2) {
   const urlConfig = overloadUrlconfig(arg0, arg1, arg2);
-  const pseudoServer = new PseudoServer();
+  const pseudoServer = new PseudoServer(urlConfig);
   serverStore[urlConfig] = pseudoServer;
+
+  // We automatically mock if we haven't mocked before.
+  // This makes our API easier, as we can just create a new PseudoServer instance,
+  // and everything is taken care for us.
+  // Note that originalFetch will never be undefined after the first mock, so for every
+  // restore() after this call, one has to call mock() explicitly.
+  if (originalFetch === undefined) {
+    mock();
+  }
   return pseudoServer;
 }
