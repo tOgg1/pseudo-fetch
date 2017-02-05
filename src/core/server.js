@@ -134,7 +134,7 @@ export default class Server {
     const endpoint = this.endpoints[endpointHash];
     if (!endpoint) {
       return new Promise((resolve, reject) => {
-        reject(new Response({status: 404}));
+        resolve(new Response({status: 404}));
       });
     }
     return endpoint._call(url, config);
