@@ -3,7 +3,7 @@ import Headers from './headers';
 /**
  * This class represents a request object.
  */
-export default class Request {
+ class Request {
 
   /**
    * Construct a new Request.
@@ -22,7 +22,6 @@ export default class Request {
     this._redirect = init.redirect || 'follow';
     this._referrer = init.referrer || 'client';
     this._integrity = init.integrity || null;
-
     this._bodyUsed = false;
   }
 
@@ -36,7 +35,7 @@ export default class Request {
 
   /**
    * The headers of the Request.
-   * @return {[type]} [description]
+   * @return {Headers} The headers.
    */
   get headers() {
     return this._headers;
@@ -86,7 +85,7 @@ export default class Request {
    * @return {String} The referrerPolicy value:
    */
   get referrerPolicy() {
-    return this.headers().get('Referrer') || '';
+    return this.headers.get('Referrer') || '';
   }
 
   /**
@@ -96,4 +95,62 @@ export default class Request {
   get url() {
     return this._url;
   }
+
+  /**
+   * Returns an arrayBuffer representation of the body, if possible.
+   *
+   * Currently not implemented.
+   */
+  arrayBuffer() {
+    throw new Error('arrayBuffer not implemented');
+  }
+
+  /**
+   * Returns a blob-representation of the body, if possible.
+   *
+   * Currently not implemented.
+   */
+  blob() {
+    throw new Error('arrayBuffer not implemented');
+  }
+
+  /**
+   * Returns a formData-representation of the body, if possible.
+   *
+   * Currently not implemented.
+   */
+  formData() {
+    throw new Error('formData not implemented');
+  }
+
+  /**
+   * Returns a json-representation of the body, wrapped in a Promise, if possible.
+   * @return {Promise} A promise which resolves with a json representation of the body.
+   */
+  json() {
+    return new Promise((resolve, reject) => {
+      try {
+        let parsed = JSON.parse(this.body || '');
+        resolve(parsed);
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  /**
+   * Returns a text-representation of the body, wrapped in a Promise, if possible.
+   * @return {Promise}  A promise which resolves with a text-representation of the body.
+   */
+  text() {
+    return new Promise((resolve, reject) => {
+      try {
+        resolve((this.body || '').toString());
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
 }
+
+export default Request;
