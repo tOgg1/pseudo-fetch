@@ -118,6 +118,14 @@ export default class Server {
    * @return {PseudoEndpoint} The resulting endpoint.
    */
   head(url) {
-    return route(url, 'HEAD');
+  _call(url='', config={}) {
+    const endpointHash = createEndpointHash(url, config.method || 'GET');
+    const endpoint = this.endpoints[endpointHash];
+    if (!endpoint) {
+      return new Promise((resolve, reject) => {
+        reject(new Response({status: 404}));
+      });
+    }
+    return endpoint._call(url, config);
   }
 }
