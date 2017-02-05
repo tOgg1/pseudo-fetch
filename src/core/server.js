@@ -122,6 +122,13 @@ export default class Server {
     return this.route(url, 'HEAD');
   }
 
+  /**
+   * Calls this server.
+   *
+   * @param  {String} url    Request url
+   * @param  {Object} config Request config
+   * @return {Promise}       Promise
+   */
   _call(url='', config={}) {
     const endpointHash = createEndpointHash(url, config.method || 'GET');
     const endpoint = this.endpoints[endpointHash];
