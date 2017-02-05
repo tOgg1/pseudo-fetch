@@ -1,4 +1,4 @@
-import PseudoEndpoint from './pseudoendpoint';
+import Endpoint from './endpoint';
 
 /**
  * Creates an endpoint hash.
@@ -18,7 +18,7 @@ function createEndpointHash(url, method) {
  *
  * @class PseudoServer
  */
-export default class PseudoServer {
+export default class Server {
 
   /**
    * Constructor.
