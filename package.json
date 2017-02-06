@@ -1,6 +1,6 @@
 {
   "name": "pseudo-fetch",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Simple mock of global/window.fetch with a user-friendly api",
   "main": "dist/index.js",
   "scripts": {
