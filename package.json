@@ -4,6 +4,7 @@
   "description": "Simple mock of global/window.fetch with a user-friendly api",
   "main": "src/index.js",
   "scripts": {
+    "docs": "jsdoc2md src/**/*.js > docs/api.md",
     "test": "mocha tests --require tests/test_helper.js --compilers js:babel-core/register --recursive"
   },
   "author": "Tormod Haugland",
