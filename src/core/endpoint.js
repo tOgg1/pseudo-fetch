@@ -13,7 +13,7 @@ export default class Endpoint {
    *
    * @param  {string} url                       Url of the endpoint
    * @param  {string} method                    Method to listen for, typically GET, POST, PATCH, OPTIONS etc.
-   * @param  {Function|Any?} responseFunction   Responsefunction. Optional argument.
+   * @param  {Function|Any} responseFunction   Responsefunction. Optional argument.
    */
   constructor(url, method, responseFunction) {
     this.url = url || '/';

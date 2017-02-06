@@ -52,7 +52,7 @@ export default class Headers {
   /**
    * Gets the header-value specified by a header key.
    *
-   * @param  {[type]} key A header-key.
+   * @param  {String} key A header-key.
    * @return {Array}      A header-value.
    */
   get(key) {
@@ -91,8 +91,8 @@ export default class Headers {
   /**
    * Sets a header-key/value pair. Will overwrite all existing values of the specified key.
    *
-   * @param {[type]} key   [description]
-   * @param {[type]} value [description]
+   * @param {String} key   [description]
+   * @param {String} value [description]
    */
   set(key, value) {
     this._data[key] = [value];
