@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/tOgg1/pseudo-fetch.svg?branch=master)](https://travis-ci.org/tOgg1/pseudo-fetch)
+[![Version](https://img.shields.io/badge/version-v0.2.1-blue.svg)](https://www.npmjs.com/package/pseudo-fetch)
+
 # Pseudo Fetch
 Pseudo-fetch is a lightweight mock of the Fetch API. It does not try to be compliant to any standard, but instead to have a light and easy API for you to use.
 
