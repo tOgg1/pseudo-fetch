@@ -1,6 +1,6 @@
 {
   "name": "pseudo-fetch",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "description": "Simple mock of global/window.fetch with a user-friendly api",
   "repository": {
     "type": "git",

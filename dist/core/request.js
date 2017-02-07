@@ -32,7 +32,7 @@ var Request = function () {
 
     this._url = url || '';
     this._method = init.method || 'GET';
-    this._headers = init.headers || new _headers2.default();
+    this._headers = new _headers2.default(init.headers);
     this._body = init.body || '';
     this._mode = init.mode || 'cors';
     this._credentials = init.credentials || 'omit';
@@ -83,7 +83,7 @@ var Request = function () {
   }, {
     key: 'formData',
     value: function formData() {
-      throw new Error('formData not implemented');
+      throw new Error('arrayBuffer not implemented');
     }
 
     /**

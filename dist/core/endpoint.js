@@ -40,8 +40,8 @@ var Endpoint = function () {
 
     this.url = url || '/';
     this.method = method || 'GET';
-    this.acceptFunctions = [];
-    this.rejectFunctions = [];
+    this.includeFunctions = [];
+    this.excludeFunctions = [];
     this._status = 200;
     this.headers = new _headers2.default();
     this.responseFunction = responseFunction || function (req, res) {
@@ -63,7 +63,7 @@ var Endpoint = function () {
   _createClass(Endpoint, [{
     key: 'include',
     value: function include(condition) {
-      this.acceptFunctions.push(condition);
+      this.includeFunctions.push(condition);
       return this;
     }
 
@@ -79,7 +79,7 @@ var Endpoint = function () {
   }, {
     key: 'exclude',
     value: function exclude(condition) {
-      this.rejectFunctions.push(condition);
+      this.excludeFunctions.push(condition);
       return this;
     }
 
@@ -171,23 +171,35 @@ var Endpoint = function () {
       var _this = this;
 
       return new Promise(function (resolve, reject) {
-        var request = new _request2.default();
+        var request = new _request2.default(url, config);
         var response = new _response2.default();
 
-        // Check for validity through accept and reject conditions
-        for (var i = 0; i < _this.acceptFunctions.length; i++) {
-          if (typeof _this.acceptFunctions[i] !== 'function' || !_this.acceptFunctions[i](url, config)) {
-            reject(response.error());
+        // Set it temporarily to 400, in case we return from an inclusion/exclusion
+        // We do this so the user can override the 400 status if he/she wants to.
+        response.status = 400;
+
+        // Check for validity through include- and reject-conditions
+        for (var i = 0; i < _this.includeFunctions.length; i++) {
+          if (typeof _this.includeFunctions[i] === 'function') {
+            var includeFunctionResult = _this.includeFunctions[i](request, response);
+            if (!includeFunctionResult) {
+              return resolve(response);
+            }
           }
         }
 
-        for (var _i = 0; _i < _this.rejectFunctions.length; _i++) {
-          if (typeof _this.rejectFunctions[_i] !== 'function' || !!_this.rejectFunctions[_i](url, config)) {
-            reject(response.error());
+        for (var _i = 0; _i < _this.excludeFunctions.length; _i++) {
+          if (typeof _this.excludeFunctions[_i] === 'function') {
+            var excludeFunctionResult = _this.excludeFunctions[_i](request, response);
+            if (!!excludeFunctionResult) {
+              return resolve(response);
+            }
           }
         }
 
-        // Okey, we are good, lets run the request.
+        // Okey nothing failed, set status back
+        response.status = 200;
+
         response.status = _this._status;
         response.headers = _this.headers;
         _this._callResponseFunction(request, response);

@@ -91,27 +91,68 @@ var Headers = function () {
    *
    * @param  {Object} init The initial header info. Should be on the format:
    *                        {
-   *                          headerKey: [headerValue1, headerValue2, ...],
+   *                          headerKey: [headerValue1, headerValue2, ...] | headerValue,
    *                          ...
    *                        }
    */
-  function Headers(init) {
+  function Headers() {
+    var init = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, Headers);
 
-    this._data = init || {};
+    this._data = this._parseInit(init);
   }
 
   /**
-   * Appends a key to the Headers. If the key already exists, the value
-   * will be appended to the list of values. This distinguishes it from the
-   * set function, which will simply override all values of the specific key.
+   * Parses an init-object. If init is an Object, the object is expected to have either of the following formats:
    *
-   * @param  {String} key   [description]
-   * @param  {String} value [description]
+   *  {
+   *    headerKey: [headerValue1, headerValue2, ...]
+   *    ...
+   *  }
+   *
+   * or
+   * {
+   *    headerKey: headerValue
+   * }
+   *
+   * For all keys that has the first format, we simply leave the value field be.
+   * For keys of the second format, we wrap the value in an Array.
+   *
+   * If init is a Headers-instance, we simply return it.
+   *
+   * @param  {Object|Header} init An init object
+   * @return {Object}      Returns a parsed object on the format we expect.
    */
 
 
   _createClass(Headers, [{
+    key: "_parseInit",
+    value: function _parseInit(init) {
+      if (init.constructor === Headers) {
+        return Object.assign({}, init._data);
+      } else if (init.constructor === Object) {
+        Object.keys(init).forEach(function (key) {
+          if (init[key].constructor !== Array) {
+            init[key] = [init[key]];
+          }
+        });
+        return init;
+      } else {
+        throw new Error("Invalid argument to Headers: Expected object of type Object or Headers,\n                       but got " + init.constructor.name);
+      }
+    }
+
+    /**
+     * Appends a key to the Headers. If the key already exists, the value
+     * will be appended to the list of values. This distinguishes it from the
+     * set function, which will simply override all values of the specific key.
+     *
+     * @param  {String} key   [description]
+     * @param  {String} value [description]
+     */
+
+  }, {
     key: "append",
     value: function append(key, value) {
       if (key in this._data) {
@@ -1259,8 +1300,8 @@ var Endpoint = function () {
 
     this.url = url || '/';
     this.method = method || 'GET';
-    this.acceptFunctions = [];
-    this.rejectFunctions = [];
+    this.includeFunctions = [];
+    this.excludeFunctions = [];
     this._status = 200;
     this.headers = new _headers2.default();
     this.responseFunction = responseFunction || function (req, res) {
@@ -1282,7 +1323,7 @@ var Endpoint = function () {
   _createClass(Endpoint, [{
     key: 'include',
     value: function include(condition) {
-      this.acceptFunctions.push(condition);
+      this.includeFunctions.push(condition);
       return this;
     }
 
@@ -1298,7 +1339,7 @@ var Endpoint = function () {
   }, {
     key: 'exclude',
     value: function exclude(condition) {
-      this.rejectFunctions.push(condition);
+      this.excludeFunctions.push(condition);
       return this;
     }
 
@@ -1390,23 +1431,35 @@ var Endpoint = function () {
       var _this = this;
 
       return new Promise(function (resolve, reject) {
-        var request = new _request2.default();
+        var request = new _request2.default(url, config);
         var response = new _response2.default();
 
-        // Check for validity through accept and reject conditions
-        for (var i = 0; i < _this.acceptFunctions.length; i++) {
-          if (typeof _this.acceptFunctions[i] !== 'function' || !_this.acceptFunctions[i](url, config)) {
-            reject(response.error());
+        // Set it temporarily to 400, in case we return from an inclusion/exclusion
+        // We do this so the user can override the 400 status if he/she wants to.
+        response.status = 400;
+
+        // Check for validity through include- and reject-conditions
+        for (var i = 0; i < _this.includeFunctions.length; i++) {
+          if (typeof _this.includeFunctions[i] === 'function') {
+            var includeFunctionResult = _this.includeFunctions[i](request, response);
+            if (!includeFunctionResult) {
+              return resolve(response);
+            }
           }
         }
 
-        for (var _i = 0; _i < _this.rejectFunctions.length; _i++) {
-          if (typeof _this.rejectFunctions[_i] !== 'function' || !!_this.rejectFunctions[_i](url, config)) {
-            reject(response.error());
+        for (var _i = 0; _i < _this.excludeFunctions.length; _i++) {
+          if (typeof _this.excludeFunctions[_i] === 'function') {
+            var excludeFunctionResult = _this.excludeFunctions[_i](request, response);
+            if (!!excludeFunctionResult) {
+              return resolve(response);
+            }
           }
         }
 
-        // Okey, we are good, lets run the request.
+        // Okey nothing failed, set status back
+        response.status = 200;
+
         response.status = _this._status;
         response.headers = _this.headers;
         _this._callResponseFunction(request, response);
@@ -1478,7 +1531,7 @@ var Request = function () {
 
     this._url = url || '';
     this._method = init.method || 'GET';
-    this._headers = init.headers || new _headers2.default();
+    this._headers = new _headers2.default(init.headers);
     this._body = init.body || '';
     this._mode = init.mode || 'cors';
     this._credentials = init.credentials || 'omit';
@@ -1529,7 +1582,7 @@ var Request = function () {
   }, {
     key: 'formData',
     value: function formData() {
-      throw new Error('formData not implemented');
+      throw new Error('arrayBuffer not implemented');
     }
 
     /**

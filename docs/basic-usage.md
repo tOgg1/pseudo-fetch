@@ -202,7 +202,6 @@ fetch('http://example.com')  // This is now using the original fetch, and will f
 mock();  // And we're back in business, this will use the mock-fetch.
          // Note that we don't need to create new servers; the previously created
          // ones will work just fine.
-
 ```
 
 [Next: Advanced usage](https://togg1.github.io/pseudo-fetch/docs/advanced-usage)

@@ -18,27 +18,68 @@ var Headers = function () {
    *
    * @param  {Object} init The initial header info. Should be on the format:
    *                        {
-   *                          headerKey: [headerValue1, headerValue2, ...],
+   *                          headerKey: [headerValue1, headerValue2, ...] | headerValue,
    *                          ...
    *                        }
    */
-  function Headers(init) {
+  function Headers() {
+    var init = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
     _classCallCheck(this, Headers);
 
-    this._data = init || {};
+    this._data = this._parseInit(init);
   }
 
   /**
-   * Appends a key to the Headers. If the key already exists, the value
-   * will be appended to the list of values. This distinguishes it from the
-   * set function, which will simply override all values of the specific key.
+   * Parses an init-object. If init is an Object, the object is expected to have either of the following formats:
    *
-   * @param  {String} key   [description]
-   * @param  {String} value [description]
+   *  {
+   *    headerKey: [headerValue1, headerValue2, ...]
+   *    ...
+   *  }
+   *
+   * or
+   * {
+   *    headerKey: headerValue
+   * }
+   *
+   * For all keys that has the first format, we simply leave the value field be.
+   * For keys of the second format, we wrap the value in an Array.
+   *
+   * If init is a Headers-instance, we simply return it.
+   *
+   * @param  {Object|Header} init An init object
+   * @return {Object}      Returns a parsed object on the format we expect.
    */
 
 
   _createClass(Headers, [{
+    key: "_parseInit",
+    value: function _parseInit(init) {
+      if (init.constructor === Headers) {
+        return Object.assign({}, init._data);
+      } else if (init.constructor === Object) {
+        Object.keys(init).forEach(function (key) {
+          if (init[key].constructor !== Array) {
+            init[key] = [init[key]];
+          }
+        });
+        return init;
+      } else {
+        throw new Error("Invalid argument to Headers: Expected object of type Object or Headers,\n                       but got " + init.constructor.name);
+      }
+    }
+
+    /**
+     * Appends a key to the Headers. If the key already exists, the value
+     * will be appended to the list of values. This distinguishes it from the
+     * set function, which will simply override all values of the specific key.
+     *
+     * @param  {String} key   [description]
+     * @param  {String} value [description]
+     */
+
+  }, {
     key: "append",
     value: function append(key, value) {
       if (key in this._data) {
