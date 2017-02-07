@@ -127,6 +127,61 @@ server
 
 ### Include and exclude
 
+The endpoint class exposes two methods for accepting and rejecting requests before they are handled by a `.send` or `.respond` call: `include` and `exclude` (They are named so to avoid semantic confusion with either the accept-header, or rejection of a promise). If an include method fails, or an exclude method succeeds, the server will automatically respond with a 400 response.
+
+If an include-handler returns false, the request will fail with a 400.
+If an exclude-handler returns true, the request will fail with a 400.
+
+```javascript
+server
+  .post('/user')
+  .include((request, response) => {
+    if (request.headers.get('Content-Type').includes('application/json')) {
+      return false;
+    }
+    return true;
+  })
+  .send({id: 1, name: 'Dat John Doe'});
+```
+
+The above example will fail for all requests that has present a Content-Type header with an `applicatioe/json` header.
+
+Equivalently, we could have written instead:
+
+```javascript
+server
+  .get('/user')
+  .exclude((request, response) => {
+    if (!request.headers.get('Accept').includes('application/json')) {
+      return true;
+    }
+    return false;
+  })
+  .send({id: 1, name: 'Dat John Doe'});
+
+fetch('/user') // Will return a 400
+fetch('/user', {headers: {'Accept': 'application/json'}});  // Will return our user with a 200 OK
+```
+
+Note the flipped boolean return values.
+
+Includes are tested before excludes.
+
+You can override the status code (and other properties) by manipulating the response object.
+
+```javascript
+server
+  .get('/user')
+  .exclude((request, response) => {
+    if (request.credentials === 'omit') {
+      response.status = 403;
+      return true;
+    }
+    return false;
+  });
+```
+This can of course also be handled in a `.send` or `.respond` function, but this way might look a bit cleaner.
+
 ## Mocking and restoring
 
 As mentioned before, when pseudoFetch is invoked, the global fetch function is replaced with a custom one. What if you want the original back? We got you covered:
