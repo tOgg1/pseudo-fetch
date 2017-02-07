@@ -24,9 +24,9 @@ const server = pseudoFetch('example.com');  // Will accept all requests to examp
 const server2 = pseudoFetch('example.com', '8080');
 const server3 = pseudoFetch('example.com', '8080', 'https');  // Will accept all requests to https://example.com
 const server4 = pseudoFetch({
-	host: 'example.com',
-	port: '8080',
-	protocol: 'http'
+  host: 'example.com',
+  port: '8080',
+  protocol: 'http'
 });  // Same as server3
 const server5 = pseudoFetch('example.com', '8080', 'notAProtocol');  // Will not fault, but behaviour is undefined (most likely all requests will fail)
 
@@ -59,55 +59,55 @@ The Endpoint class has two methods (aliases of each other) for determining what 
 
 ```javascript
 server
-	.get('/')
-	.send('Hello world');
+  .get('/')
+  .send('Hello world');
 
 fetch('/')
-	.then(response => response.text())
-	.then(console.log);  // Will log 'Hello world'
+  .then(response => response.text())
+  .then(console.log);  // Will log 'Hello world'
 ```
 
 We can currently return json and raw-text. FormData, blobs and arrayBuffers are still TODO.
 
 ```javascript
 server
-	.get('/resource')
-	.send({type: 'resource', key: 'val'});
-	// or .send("{type: 'resource', key: 'val'}");
+  .get('/resource')
+  .send({type: 'resource', key: 'val'});
+  // or .send("{type: 'resource', key: 'val'}");
 
 fetch('/resource')
-	.then(response => response.json())
-	.then(console.log); // Will log our object
+  .then(response => response.json())
+  .then(console.log); // Will log our object
 ```
 
 As argument to send (respond), we can also supply a function, accepting to parameters (request and response).
 
 ```javascript
 server
-	.get('/')
-	.send((request, response) => {
-		// Do stuff
-	});
+  .get('/')
+  .send((request, response) => {
+    // Do stuff
+  });
 ```
 
 The two arguments are Request and Response object instances, respectively. The Response object passed is the one which will be returned to the fetch-call, on completio. This object should thus be edited in place. Example:
 
 ```javascript
 server
-	.get('/time')
-	.send((request, response) => {
-		response.header.set('Content-Type', 'plain/text');
-		response.body = new Date().toString();  // Return the current time
-	});
+  .get('/time')
+  .send((request, response) => {
+    response.header.set('Content-Type', 'plain/text');
+    response.body = new Date().toString();  // Return the current time
+  });
 ```
 
 ### Setting response fields
 
 The endpoint class has some handy methods (all of whom return the endpoint object itself) for setting some standard response fields:
 
-	* status(code)
-	* setHeader(key, value)
-	* contentType() - Alias for setHeader('Content-Type', value)
+  * status(code)
+  * setHeader(key, value)
+  * contentType() - Alias for setHeader('Content-Type', value)
 
 Note that setting the status also automatically populates the statusMessage field of the response.
 
@@ -116,17 +116,38 @@ Example:
 ```javascript
 
 server
-	.post('/user')
-	.status(201)
-	.send({id: '1', type: 'user', attributes: {email: 'someEmail'}});
+  .post('/user')
+  .status(201)
+  .send({id: '1', type: 'user', attributes: {email: 'someEmail'}});
 
 server
-	.get('/')
-	.setHeader('')
+  .get('/')
+  .setHeader('')
 ```
 
 ### Include and exclude
 
 ## Mocking and restoring
+
+As mentioned before, when pseudoFetch is invoked, the global fetch function is replaced with a custom one. What if you want the original back? We got you covered:
+
+```javascript
+import pseudoFetch, {mock, restore} from 'pseudoFetch';
+
+const server = pseudoFetch(); // We have now mocked the global fetch function
+
+// Do stuff with server, perhaps call fetch some times.
+...
+
+restore();  // By calling this, we restore the original fetch
+
+fetch('http://example.com')  // This is now using the original fetch, and will fetch
+                             // http://example.com
+
+mock();  // And we're back in business, this will use the mock-fetch.
+         // Note that we don't need to create new servers; the previously created
+         // ones will work just fine.
+
+```
 
 [Next: Advanced usage](https://togg1.github.io/pseudo-fetch/docs/advanced-usage)
