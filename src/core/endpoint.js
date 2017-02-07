@@ -130,7 +130,7 @@ class Endpoint {
 
       // Check for validity through include- and reject-conditions
       for (let i = 0; i < this.includeFunctions.length; i++) {
-        if (typeof this.includeFunctions[i] !== 'function') {
+        if (typeof this.includeFunctions[i] === 'function') {
           const includeFunctionResult = this.includeFunctions[i](request, response);
           if (!includeFunctionResult) {
             return resolve(response);
@@ -139,7 +139,7 @@ class Endpoint {
       }
 
       for (let i = 0; i < this.excludeFunctions.length; i++) {
-        if (typeof this.excludeFunctions[i] !== 'function') {
+        if (typeof this.excludeFunctions[i] === 'function') {
           const excludeFunctionResult = this.excludeFunctions[i](request, response);
           if (!!excludeFunctionResult) {
             return resolve(response);
