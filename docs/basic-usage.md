@@ -112,6 +112,7 @@ The endpoint class has some handy methods (all of whom return the endpoint objec
 Note that setting the status also automatically populates the statusMessage field of the response.
 
 Example:
+
 ```javascript
 
 server
