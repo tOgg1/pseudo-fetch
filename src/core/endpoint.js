@@ -124,14 +124,15 @@ class Endpoint {
       let request = new Request();
       let response = new Response();
 
-      // Check for validity through accept and reject conditions
+      // Set it temporarily to 400, in case we return from an inclusion/exclusion
+      // We do this so the user can override the 400 status if he/she wants to.
+      response.status = 400;
+
+      // Check for validity through include- and reject-conditions
       for (let i = 0; i < this.includeFunctions.length; i++) {
         if (typeof this.includeFunctions[i] !== 'function') {
           const includeFunctionResult = this.includeFunctions[i](request, response);
           if (!includeFunctionResult) {
-            if (response.status !== 200) {
-              response.status = 400;
-            }
             return resolve(response);
           }
         }
@@ -141,15 +142,14 @@ class Endpoint {
         if (typeof this.excludeFunctions[i] !== 'function') {
           const excludeFunctionResult = this.excludeFunctions[i](request, response);
           if (!!excludeFunctionResult) {
-            if (response.status !== 200) {
-              response.status = 400;
-            }
             return resolve(response);
           }
         }
       }
 
-      // Okey, we are good, lets run the request.
+      // Okey nothing failed, set status back
+      response.status = 200;
+
       response.status = this._status;
       response.headers = this.headers;
       this._callResponseFunction(request, response);
