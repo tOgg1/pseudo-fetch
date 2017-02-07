@@ -45,17 +45,54 @@ describe('Endpoint', () => {
     });
   });
   describe('#include', () => {
-    it('should add a new acceptFunction', () => {
+    it('should add a new include function', () => {
       const endpoint = new Endpoint();
-      endpoint.include((url, config) => url !== '/');
-      expect(endpoint.acceptFunctions).to.have.length(1);
+      endpoint.include((request, response) => request.url !== '/');
+      expect(endpoint.includeFunctions).to.have.length(1);
+    });
+    it('should fail a call not passing an include function', () => {
+      const endpoint = new Endpoint();
+      endpoint.include((request, response) => {
+        if (request.headers.get('Content-Type').includes('application/json')) {
+          return false;
+        }
+        return true;
+      });
+      return expect(endpoint._call('/', {headers: {'Content-Type': 'application/json'}})
+        .then((res) => res.status)
+      ).to.eventually.equal(400);
+    });
+    it('should not fail a call passing an include function', () => {
+      const endpoint = new Endpoint();
+      endpoint.include((request, response) => {
+        if (request.headers.get('Content-Type').includes('application/json')) {
+          return true;
+        }
+        return false;
+      });
+      return expect(endpoint._call('/', {headers: {'Content-Type': 'application/json'}})
+        .then((res) => res.status)
+      ).to.eventually.equal(200);
+    });
+    it('should be able to set a custom status on a failing include function', () => {
+      const endpoint = new Endpoint();
+      endpoint.include((request, response) => {
+        if (request.headers.get('Content-Type').includes('application/json')) {
+          response.status = 409;
+          return false;
+        }
+        return true;
+      });
+      return expect(endpoint._call('/', {headers: {'Content-Type': 'application/json'}})
+        .then((res) => res.status)
+      ).to.eventually.equal(409);
     });
   });
   describe('#exclude', () => {
-    it('should add a new rejectFunction', () => {
+    it('should add a new excludeFunction', () => {
       const endpoint = new Endpoint();
       endpoint.exclude((url, config) => url !== '/');
-      expect(endpoint.rejectFunctions).to.have.length(1);
+      expect(endpoint.excludeFunctions).to.have.length(1);
     });
   });
   describe('#setHeader', () => {
