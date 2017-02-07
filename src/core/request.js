@@ -14,7 +14,7 @@ import Headers from './headers';
   constructor(url, init = {}) {
     this._url = url || '';
     this._method = init.method || 'GET';
-    this._headers = init.headers || new Headers();
+    this._headers = new Headers(init.headers);
     this._body = init.body || '';
     this._mode = init.mode || 'cors';
     this._credentials = init.credentials || 'omit';
@@ -120,7 +120,7 @@ import Headers from './headers';
    * Currently not implemented.
    */
   formData() {
-    throw new Error('formData not implemented');
+    throw new Error('arrayBuffer not implemented');
   }
 
   /**

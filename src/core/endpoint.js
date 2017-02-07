@@ -121,7 +121,7 @@ class Endpoint {
    */
   _call(url, config) {
     return new Promise((resolve, reject) => {
-      let request = new Request();
+      let request = new Request(url, config);
       let response = new Response();
 
       // Set it temporarily to 400, in case we return from an inclusion/exclusion
