@@ -18,8 +18,8 @@ class Endpoint {
   constructor(url, method, responseFunction) {
     this.url = url || '/';
     this.method = method || 'GET';
-    this.acceptFunctions = [];
-    this.rejectFunctions = [];
+    this.includeFunctions = [];
+    this.excludeFunctions = [];
     this._status = 200;
     this.headers = new Headers();
     this.responseFunction = responseFunction || ((req, res) => 'Hello world');
@@ -35,7 +35,7 @@ class Endpoint {
    * @return {Endpoint}            This
    */
   include(condition) {
-    this.acceptFunctions.push(condition);
+    this.includeFunctions.push(condition);
     return this;
   }
 
@@ -48,7 +48,7 @@ class Endpoint {
    * @return {Endpoint}           This
    */
   exclude(condition) {
-    this.rejectFunctions.push(condition);
+    this.excludeFunctions.push(condition);
     return this;
   }
 
@@ -124,19 +124,28 @@ class Endpoint {
       let request = new Request();
       let response = new Response();
 
-
       // Check for validity through accept and reject conditions
-      for (let i = 0; i < this.acceptFunctions.length; i++) {
-        if (typeof this.acceptFunctions[i] !== 'function' ||
-            !this.acceptFunctions[i](url, config)) {
-          reject(response.error());
+      for (let i = 0; i < this.includeFunctions.length; i++) {
+        if (typeof this.includeFunctions[i] !== 'function') {
+          const includeFunctionResult = this.includeFunctions[i](request, response);
+          if (!includeFunctionResult) {
+            if (response.status !== 200) {
+              response.status = 400;
+            }
+            return resolve(response);
+          }
         }
       }
 
-      for (let i = 0; i < this.rejectFunctions.length; i++) {
-        if (typeof this.rejectFunctions[i] !== 'function' ||
-            !!this.rejectFunctions[i](url, config)) {
-          reject(response.error());
+      for (let i = 0; i < this.excludeFunctions.length; i++) {
+        if (typeof this.excludeFunctions[i] !== 'function') {
+          const excludeFunctionResult = this.excludeFunctions[i](request, response);
+          if (!!excludeFunctionResult) {
+            if (response.status !== 200) {
+              response.status = 400;
+            }
+            return resolve(response);
+          }
         }
       }
 
