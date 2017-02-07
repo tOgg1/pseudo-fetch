@@ -1,5 +1,5 @@
 # Basic usage patterns
-[Previous: Index](/)
+[Previous: Index](https://togg1.github.io/pseudo-fetch/)
 
 ## Creating a server
 
@@ -128,4 +128,4 @@ server
 
 ## Mocking and restoring
 
-[Next: Advanced usage](/docs/advanced-usage)
+[Next: Advanced usage](https://togg1.github.io/pseudo-fetch/docs/advanced-usage)
