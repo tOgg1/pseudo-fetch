@@ -8,12 +8,49 @@ export default class Headers {
    *
    * @param  {Object} init The initial header info. Should be on the format:
    *                        {
-   *                          headerKey: [headerValue1, headerValue2, ...],
+   *                          headerKey: [headerValue1, headerValue2, ...] | headerValue,
    *                          ...
    *                        }
    */
-  constructor(init) {
-    this._data = init || {};
+  constructor(init={}) {
+    this._data = this._parseInit(init);
+  }
+
+  /**
+   * Parses an init-object. If init is an Object, the object is expected to have either of the following formats:
+   *
+   *  {
+   *    headerKey: [headerValue1, headerValue2, ...]
+   *    ...
+   *  }
+   *
+   * or
+   * {
+   *    headerKey: headerValue
+   * }
+   *
+   * For all keys that has the first format, we simply leave the value field be.
+   * For keys of the second format, we wrap the value in an Array.
+   *
+   * If init is a Headers-instance, we simply return it.
+   *
+   * @param  {Object|Header} init An init object
+   * @return {Object}      Returns a parsed object on the format we expect.
+   */
+  _parseInit(init) {
+    if (init.constructor === Headers) {
+      return init;
+    } else if (init.constructor === Object) {
+      Object.keys(init).forEach((key) => {
+        if (init[key].constructor !== Array) {
+          init[key] = [init[key]];
+        }
+      });
+      return init;
+    } else {
+      throw new Error(`Invalid argument to Headers: Expected object of type Object or Headers,
+                       but got ${init.constructor.name}`);
+    }
   }
 
   /**
