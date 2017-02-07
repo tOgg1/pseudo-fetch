@@ -126,4 +126,4 @@ fetch('/human', {
 
 ```
 
-[Next: Basic usage](/docs/basic-usage)
+[Next: Basic usage](https://togg1.github.io/pseudo-fetch/docs/basic-usage)
