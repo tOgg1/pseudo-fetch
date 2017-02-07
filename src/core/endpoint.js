@@ -6,7 +6,7 @@ import Headers from './headers';
  * This class represents an endpoint that can be called.
  * @class Endpoint
  */
-export default class Endpoint {
+class Endpoint {
 
   /**
    * Constructs a Endpoint instance.
@@ -164,3 +164,5 @@ export default class Endpoint {
     }
   }
 }
+
+export default Endpoint;
