@@ -4,6 +4,7 @@
 # Pseudo Fetch
 
 [Docs](https://togg1.github.io/pseudo-fetch/)
+
 Pseudo-fetch is a lightweight mock of the Fetch API. It does not try to be compliant to any standard, but instead to have a light and easy API for you to use.
 
 ## Installation
@@ -124,3 +125,5 @@ fetch('/human', {
   });
 
 ```
+
+[Next: Basic usage](/docs/basic-usage)

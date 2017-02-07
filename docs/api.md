@@ -3,6 +3,8 @@
 <dl>
 <dt><a href="#Endpoint">Endpoint</a></dt>
 <dd></dd>
+<dt><a href="#Endpoint">Endpoint</a></dt>
+<dd></dd>
 <dt><a href="#Request">Request</a></dt>
 <dd><p>This class represents a request object.</p>
 </dd>
@@ -28,42 +30,6 @@ Body-inherited methods are implemented, but is readily available after toWindowR
 ## Functions
 
 <dl>
-<dt><a href="#include">include(condition)</a> ⇒ <code><a href="#Endpoint">Endpoint</a></code></dt>
-<dd><p>Adds an accept-function to the endpoint. When called, the endpoint will
-go through all accept-functions to check for truthness. If either does not return a truthy value,
-the call will fail with a 400 Bad Request.</p>
-</dd>
-<dt><a href="#exclude">exclude(condition)</a> ⇒ <code><a href="#Endpoint">Endpoint</a></code></dt>
-<dd><p>Adds an reject-function to the endpoint. When called, the endpoint will go through
-all reject-functions (after the accept-functions) to check for falseness. If either does return a truthy value,
-the call will fail with a 400 Bad Request.</p>
-</dd>
-<dt><a href="#setHeader">setHeader(key, value)</a> ⇒ <code><a href="#Endpoint">Endpoint</a></code></dt>
-<dd><p>Sets a key-value pair of headers on this endpoint. This header will be sent back with any
-response from this endpoint.</p>
-</dd>
-<dt><a href="#respond">respond(responseFunction)</a> ⇒ <code><a href="#Endpoint">Endpoint</a></code></dt>
-<dd><p>Defines the response to give when this endpoint is (succesfully) called.</p>
-</dd>
-<dt><a href="#send">send(responseFunction)</a> ⇒ <code><a href="#Endpoint">Endpoint</a></code></dt>
-<dd><p>Alias for respond.</p>
-</dd>
-<dt><a href="#status">status(status)</a> ⇒ <code><a href="#Endpoint">Endpoint</a></code></dt>
-<dd><p>Sets the status of this endpoint.</p>
-</dd>
-<dt><a href="#contentType">contentType(type)</a> ⇒ <code><a href="#Endpoint">Endpoint</a></code></dt>
-<dd><p>Shortcut for setting the contentType header.</p>
-</dd>
-<dt><a href="#_call">_call(url, config)</a> ⇒ <code><a href="#Response">Response</a></code></dt>
-<dd><p>This method should be called when the endpoint is being requested.</p>
-<p>The method will perform all actions necessary to make the endpoint behave as expected
-on the basis of its configuration.</p>
-</dd>
-<dt><a href="#_callResponseFunction">_callResponseFunction(request, response)</a></dt>
-<dd><p>Overloads the Response function. If this.responseFunction is a function,
-it will be called. If it is anything else, it will be interpreted as the body
-to return.</p>
-</dd>
 <dt><a href="#append">append(key, value)</a></dt>
 <dd><p>Appends a key to the Headers. If the key already exists, the value
 will be appended to the list of values. This distinguishes it from the
@@ -133,10 +99,311 @@ Endpoint-instance, and adds it to the endpoints-dict of this server.</p>
 
 ## Endpoint
 **Kind**: global class  
+
+* [Endpoint](#Endpoint)
+    * [new Endpoint()](#new_Endpoint_new)
+    * [new Endpoint(url, method, responseFunction)](#new_Endpoint_new)
+    * [.include(condition)](#Endpoint+include) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.exclude(condition)](#Endpoint+exclude) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.setHeader(key, value)](#Endpoint+setHeader) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.respond(responseFunction)](#Endpoint+respond) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.send(responseFunction)](#Endpoint+send) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.status(status)](#Endpoint+status) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.contentType(type)](#Endpoint+contentType) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [._call(url, config)](#Endpoint+_call) ⇒ <code>[Response](#Response)</code>
+    * [._callResponseFunction(request, response)](#Endpoint+_callResponseFunction)
+
 <a name="new_Endpoint_new"></a>
 
 ### new Endpoint()
 This class represents an endpoint that can be called.
+
+<a name="new_Endpoint_new"></a>
+
+### new Endpoint(url, method, responseFunction)
+Constructs a Endpoint instance.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> | Url of the endpoint |
+| method | <code>string</code> | Method to listen for, typically GET, POST, PATCH, OPTIONS etc. |
+| responseFunction | <code>function</code> &#124; <code>Any</code> | Responsefunction. Optional argument. |
+
+<a name="Endpoint+include"></a>
+
+### endpoint.include(condition) ⇒ <code>[Endpoint](#Endpoint)</code>
+Adds an accept-function to the endpoint. When called, the endpoint will
+go through all accept-functions to check for truthness. If either does not return a truthy value,
+the call will fail with a 400 Bad Request.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - This  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| condition | <code>function</code> | The conditional function to check for                                     The function should accept two parameters: url and config |
+
+<a name="Endpoint+exclude"></a>
+
+### endpoint.exclude(condition) ⇒ <code>[Endpoint](#Endpoint)</code>
+Adds an reject-function to the endpoint. When called, the endpoint will go through
+all reject-functions (after the accept-functions) to check for falseness. If either does return a truthy value,
+the call will fail with a 400 Bad Request.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - This  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| condition | <code>function</code> | The conditiaonl function to check for |
+
+<a name="Endpoint+setHeader"></a>
+
+### endpoint.setHeader(key, value) ⇒ <code>[Endpoint](#Endpoint)</code>
+Sets a key-value pair of headers on this endpoint. This header will be sent back with any
+response from this endpoint.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| key | <code>string</code> | Header key |
+| value | <code>string</code> | Header value |
+
+<a name="Endpoint+respond"></a>
+
+### endpoint.respond(responseFunction) ⇒ <code>[Endpoint](#Endpoint)</code>
+Defines the response to give when this endpoint is (succesfully) called.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| responseFunction | <code>function</code> | The response function of the endpoint |
+
+<a name="Endpoint+send"></a>
+
+### endpoint.send(responseFunction) ⇒ <code>[Endpoint](#Endpoint)</code>
+Alias for respond.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| responseFunction | <code>function</code> | The response function of the endpoint |
+
+<a name="Endpoint+status"></a>
+
+### endpoint.status(status) ⇒ <code>[Endpoint](#Endpoint)</code>
+Sets the status of this endpoint.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| status | <code>int</code> | The status of this endpoint. |
+
+<a name="Endpoint+contentType"></a>
+
+### endpoint.contentType(type) ⇒ <code>[Endpoint](#Endpoint)</code>
+Shortcut for setting the contentType header.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| type | <code>String</code> | The contentType value. |
+
+<a name="Endpoint+_call"></a>
+
+### endpoint._call(url, config) ⇒ <code>[Response](#Response)</code>
+This method should be called when the endpoint is being requested.
+
+The method will perform all actions necessary to make the endpoint behave as expected
+on the basis of its configuration.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Response](#Response)</code> - Epic  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> | The url of the endpoint |
+| config | <code>Object</code> | The object of the endpoint |
+
+<a name="Endpoint+_callResponseFunction"></a>
+
+### endpoint._callResponseFunction(request, response)
+Overloads the Response function. If this.responseFunction is a function,
+it will be called. If it is anything else, it will be interpreted as the body
+to return.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| request | <code>[Request](#Request)</code> | The request object of the call |
+| response | <code>[Response](#Response)</code> | The response object of the call. |
+
+<a name="Endpoint"></a>
+
+## Endpoint
+**Kind**: global class  
+
+* [Endpoint](#Endpoint)
+    * [new Endpoint()](#new_Endpoint_new)
+    * [new Endpoint(url, method, responseFunction)](#new_Endpoint_new)
+    * [.include(condition)](#Endpoint+include) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.exclude(condition)](#Endpoint+exclude) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.setHeader(key, value)](#Endpoint+setHeader) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.respond(responseFunction)](#Endpoint+respond) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.send(responseFunction)](#Endpoint+send) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.status(status)](#Endpoint+status) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [.contentType(type)](#Endpoint+contentType) ⇒ <code>[Endpoint](#Endpoint)</code>
+    * [._call(url, config)](#Endpoint+_call) ⇒ <code>[Response](#Response)</code>
+    * [._callResponseFunction(request, response)](#Endpoint+_callResponseFunction)
+
+<a name="new_Endpoint_new"></a>
+
+### new Endpoint()
+This class represents an endpoint that can be called.
+
+<a name="new_Endpoint_new"></a>
+
+### new Endpoint(url, method, responseFunction)
+Constructs a Endpoint instance.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> | Url of the endpoint |
+| method | <code>string</code> | Method to listen for, typically GET, POST, PATCH, OPTIONS etc. |
+| responseFunction | <code>function</code> &#124; <code>Any</code> | Responsefunction. Optional argument. |
+
+<a name="Endpoint+include"></a>
+
+### endpoint.include(condition) ⇒ <code>[Endpoint](#Endpoint)</code>
+Adds an accept-function to the endpoint. When called, the endpoint will
+go through all accept-functions to check for truthness. If either does not return a truthy value,
+the call will fail with a 400 Bad Request.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - This  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| condition | <code>function</code> | The conditional function to check for                                     The function should accept two parameters: url and config |
+
+<a name="Endpoint+exclude"></a>
+
+### endpoint.exclude(condition) ⇒ <code>[Endpoint](#Endpoint)</code>
+Adds an reject-function to the endpoint. When called, the endpoint will go through
+all reject-functions (after the accept-functions) to check for falseness. If either does return a truthy value,
+the call will fail with a 400 Bad Request.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - This  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| condition | <code>function</code> | The conditiaonl function to check for |
+
+<a name="Endpoint+setHeader"></a>
+
+### endpoint.setHeader(key, value) ⇒ <code>[Endpoint](#Endpoint)</code>
+Sets a key-value pair of headers on this endpoint. This header will be sent back with any
+response from this endpoint.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| key | <code>string</code> | Header key |
+| value | <code>string</code> | Header value |
+
+<a name="Endpoint+respond"></a>
+
+### endpoint.respond(responseFunction) ⇒ <code>[Endpoint](#Endpoint)</code>
+Defines the response to give when this endpoint is (succesfully) called.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| responseFunction | <code>function</code> | The response function of the endpoint |
+
+<a name="Endpoint+send"></a>
+
+### endpoint.send(responseFunction) ⇒ <code>[Endpoint](#Endpoint)</code>
+Alias for respond.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| responseFunction | <code>function</code> | The response function of the endpoint |
+
+<a name="Endpoint+status"></a>
+
+### endpoint.status(status) ⇒ <code>[Endpoint](#Endpoint)</code>
+Sets the status of this endpoint.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| status | <code>int</code> | The status of this endpoint. |
+
+<a name="Endpoint+contentType"></a>
+
+### endpoint.contentType(type) ⇒ <code>[Endpoint](#Endpoint)</code>
+Shortcut for setting the contentType header.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| type | <code>String</code> | The contentType value. |
+
+<a name="Endpoint+_call"></a>
+
+### endpoint._call(url, config) ⇒ <code>[Response](#Response)</code>
+This method should be called when the endpoint is being requested.
+
+The method will perform all actions necessary to make the endpoint behave as expected
+on the basis of its configuration.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+**Returns**: <code>[Response](#Response)</code> - Epic  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| url | <code>string</code> | The url of the endpoint |
+| config | <code>Object</code> | The object of the endpoint |
+
+<a name="Endpoint+_callResponseFunction"></a>
+
+### endpoint._callResponseFunction(request, response)
+Overloads the Response function. If this.responseFunction is a function,
+it will be called. If it is anything else, it will be interpreted as the body
+to return.
+
+**Kind**: instance method of <code>[Endpoint](#Endpoint)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| request | <code>[Request](#Request)</code> | The request object of the call |
+| response | <code>[Response](#Response)</code> | The response object of the call. |
 
 <a name="Request"></a>
 
@@ -550,126 +817,6 @@ Returns the amount of headers present in this Headers-Object.
 
 **Kind**: global variable  
 **Returns**: <code>Number</code> - The amount.  
-<a name="include"></a>
-
-## include(condition) ⇒ <code>[Endpoint](#Endpoint)</code>
-Adds an accept-function to the endpoint. When called, the endpoint will
-go through all accept-functions to check for truthness. If either does not return a truthy value,
-the call will fail with a 400 Bad Request.
-
-**Kind**: global function  
-**Returns**: <code>[Endpoint](#Endpoint)</code> - This  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| condition | <code>function</code> | The conditional function to check for                                     The function should accept two parameters: url and config |
-
-<a name="exclude"></a>
-
-## exclude(condition) ⇒ <code>[Endpoint](#Endpoint)</code>
-Adds an reject-function to the endpoint. When called, the endpoint will go through
-all reject-functions (after the accept-functions) to check for falseness. If either does return a truthy value,
-the call will fail with a 400 Bad Request.
-
-**Kind**: global function  
-**Returns**: <code>[Endpoint](#Endpoint)</code> - This  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| condition | <code>function</code> | The conditiaonl function to check for |
-
-<a name="setHeader"></a>
-
-## setHeader(key, value) ⇒ <code>[Endpoint](#Endpoint)</code>
-Sets a key-value pair of headers on this endpoint. This header will be sent back with any
-response from this endpoint.
-
-**Kind**: global function  
-**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| key | <code>string</code> | Header key |
-| value | <code>string</code> | Header value |
-
-<a name="respond"></a>
-
-## respond(responseFunction) ⇒ <code>[Endpoint](#Endpoint)</code>
-Defines the response to give when this endpoint is (succesfully) called.
-
-**Kind**: global function  
-**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| responseFunction | <code>function</code> | The response function of the endpoint |
-
-<a name="send"></a>
-
-## send(responseFunction) ⇒ <code>[Endpoint](#Endpoint)</code>
-Alias for respond.
-
-**Kind**: global function  
-**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| responseFunction | <code>function</code> | The response function of the endpoint |
-
-<a name="status"></a>
-
-## status(status) ⇒ <code>[Endpoint](#Endpoint)</code>
-Sets the status of this endpoint.
-
-**Kind**: global function  
-**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| status | <code>int</code> | The status of this endpoint. |
-
-<a name="contentType"></a>
-
-## contentType(type) ⇒ <code>[Endpoint](#Endpoint)</code>
-Shortcut for setting the contentType header.
-
-**Kind**: global function  
-**Returns**: <code>[Endpoint](#Endpoint)</code> - this  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| type | <code>String</code> | The contentType value. |
-
-<a name="_call"></a>
-
-## _call(url, config) ⇒ <code>[Response](#Response)</code>
-This method should be called when the endpoint is being requested.
-
-The method will perform all actions necessary to make the endpoint behave as expected
-on the basis of its configuration.
-
-**Kind**: global function  
-**Returns**: <code>[Response](#Response)</code> - Epic  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| url | <code>string</code> | The url of the endpoint |
-| config | <code>Object</code> | The object of the endpoint |
-
-<a name="_callResponseFunction"></a>
-
-## _callResponseFunction(request, response)
-Overloads the Response function. If this.responseFunction is a function,
-it will be called. If it is anything else, it will be interpreted as the body
-to return.
-
-**Kind**: global function  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| request | <code>[Request](#Request)</code> | The request object of the call |
-| response | <code>[Response](#Response)</code> | The response object of the call. |
-
 <a name="append"></a>
 
 ## append(key, value)
