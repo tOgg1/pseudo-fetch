@@ -39,7 +39,7 @@ export default class Headers {
    */
   _parseInit(init) {
     if (init.constructor === Headers) {
-      return init;
+      return Object.assign({}, init._data);
     } else if (init.constructor === Object) {
       Object.keys(init).forEach((key) => {
         if (init[key].constructor !== Array) {
