@@ -94,6 +94,43 @@ describe('Endpoint', () => {
       endpoint.exclude((url, config) => url !== '/');
       expect(endpoint.excludeFunctions).to.have.length(1);
     });
+    it('should fail a call not passing an exclude function', () => {
+      const endpoint = new Endpoint();
+      endpoint.exclude((request, response) => {
+        if (request.headers.get('Content-Type').includes('application/json')) {
+          return true;
+        }
+        return false;
+      });
+      return expect(endpoint._call('/', {headers: {'Content-Type': 'application/json'}})
+        .then((res) => res.status)
+      ).to.eventually.equal(400);
+    });
+    it('should not fail a call passing an exclude function', () => {
+      const endpoint = new Endpoint();
+      endpoint.exclude((request, response) => {
+        if (request.headers.get('Content-Type').includes('application/json')) {
+          return false;
+        }
+        return true;
+      });
+      return expect(endpoint._call('/', {headers: {'Content-Type': 'application/json'}})
+        .then((res) => res.status)
+      ).to.eventually.equal(200);
+    });
+    it('should be able to set a custom status on a failing include function', () => {
+      const endpoint = new Endpoint();
+      endpoint.exclude((request, response) => {
+        if (request.headers.get('Content-Type').includes('application/json')) {
+          response.status = 409;
+          return true;
+        }
+        return false;
+      });
+      return expect(endpoint._call('/', {headers: {'Content-Type': 'application/json'}})
+        .then((res) => res.status)
+      ).to.eventually.equal(409);
+    });
   });
   describe('#setHeader', () => {
     it('should add a new header', () => {
