@@ -130,6 +130,10 @@ import Headers from './headers';
   json() {
     return new Promise((resolve, reject) => {
       try {
+        // Resolve with an empty object is body is not truthy
+        if (!this.body) {
+          resolve({});
+        }
         // If we already have a parsed json-object, return it
         if (this.body.constructor === Object) {
           resolve(this.body);
