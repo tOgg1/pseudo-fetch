@@ -10,7 +10,7 @@ import Response from './response';
  * @param  {String} method The method to hash.
  * @return {String}        Returned unique hash.
  */
-function createEndpointHash(url, method) {
+export function createEndpointHash(url, method) {
   return `url:${url}|method:${method}`;
 }
 
