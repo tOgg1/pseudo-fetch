@@ -1,4 +1,5 @@
 import Headers from './headers';
+import httpmethods from './httpmethods';
 
 /**
  * This class represents a mock of a window Response.
@@ -16,11 +17,14 @@ class Response {
    * @param {Object} config
    */
   constructor(config = {}) {
-    this._body = config.body;
-    this._url = config.url;
-    this._status = config.status;
-    this._headers = config.headers || new Headers();
+    this._body = config.body || {};
+    this._url = config.url || '';
+    this._status = config.status || 200;
+    this._statusMessage = httpmethods[this._status];
+    this._headers = new Headers(config.headers);
     this._ok = config.status >= 200 && config.status < 300;
+    this._type = 'basic';
+    this._useFinalUrl = false;
   }
 
   /**
@@ -81,6 +85,7 @@ class Response {
       throw new Error(`Invalid argument given to set status. Expected number, got ${typeof status}`);
     }
     this._status = status;
+    this._statusMessage = httpmethods[status];
     this._ok = status >= 200 && status < 300;
   }
 
