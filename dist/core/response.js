@@ -12,6 +12,10 @@ var _headers = require('./headers');
 
 var _headers2 = _interopRequireDefault(_headers);
 
+var _httpmethods = require('./httpmethods');
+
+var _httpmethods2 = _interopRequireDefault(_httpmethods);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -36,11 +40,14 @@ var Response = function () {
 
     _classCallCheck(this, Response);
 
-    this._body = config.body;
-    this._url = config.url;
-    this._status = config.status;
-    this._headers = config.headers || new _headers2.default();
+    this._body = config.body || {};
+    this._url = config.url || '';
+    this._status = config.status || 200;
+    this._statusMessage = _httpmethods2.default[this._status];
+    this._headers = new _headers2.default(config.headers);
     this._ok = config.status >= 200 && config.status < 300;
+    this._type = 'basic';
+    this._useFinalUrl = false;
   }
 
   /**
@@ -146,6 +153,10 @@ var Response = function () {
 
       return new Promise(function (resolve, reject) {
         try {
+          // Resolve with an empty object is body is not truthy
+          if (!_this.body) {
+            resolve({});
+          }
           // If we already have a parsed json-object, return it
           if (_this.body.constructor === Object) {
             resolve(_this.body);
@@ -242,6 +253,7 @@ var Response = function () {
         throw new Error('Invalid argument given to set status. Expected number, got ' + (typeof status === 'undefined' ? 'undefined' : _typeof(status)));
       }
       this._status = status;
+      this._statusMessage = _httpmethods2.default[status];
       this._ok = status >= 200 && status < 300;
     }
 

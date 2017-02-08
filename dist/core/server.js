@@ -6,6 +6,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+exports.createEndpointHash = createEndpointHash;
+
 var _endpoint = require('./endpoint');
 
 var _endpoint2 = _interopRequireDefault(_endpoint);
@@ -66,7 +68,7 @@ var Server = function () {
   _createClass(Server, [{
     key: 'route',
     value: function route() {
-      var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '/';
       var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'GET';
 
       var endpoint = new _endpoint2.default(url, method);

@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -294,9 +294,9 @@ exports.default = Headers;
 "use strict";
 
 
-var required = __webpack_require__(8)
-  , lolcation = __webpack_require__(9)
-  , qs = __webpack_require__(7)
+var required = __webpack_require__(9)
+  , lolcation = __webpack_require__(10)
+  , qs = __webpack_require__(8)
   , protocolre = /^([a-z][a-z0-9.+-]*:)?(\/\/)?([\S\s]*)/i;
 
 /**
@@ -697,6 +697,10 @@ var _headers = __webpack_require__(0);
 
 var _headers2 = _interopRequireDefault(_headers);
 
+var _httpmethods = __webpack_require__(6);
+
+var _httpmethods2 = _interopRequireDefault(_httpmethods);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -721,11 +725,14 @@ var Response = function () {
 
     _classCallCheck(this, Response);
 
-    this._body = config.body;
-    this._url = config.url;
-    this._status = config.status;
-    this._headers = config.headers || new _headers2.default();
+    this._body = config.body || {};
+    this._url = config.url || '';
+    this._status = config.status || 200;
+    this._statusMessage = _httpmethods2.default[this._status];
+    this._headers = new _headers2.default(config.headers);
     this._ok = config.status >= 200 && config.status < 300;
+    this._type = 'basic';
+    this._useFinalUrl = false;
   }
 
   /**
@@ -831,6 +838,10 @@ var Response = function () {
 
       return new Promise(function (resolve, reject) {
         try {
+          // Resolve with an empty object is body is not truthy
+          if (!_this.body) {
+            resolve({});
+          }
           // If we already have a parsed json-object, return it
           if (_this.body.constructor === Object) {
             resolve(_this.body);
@@ -927,6 +938,7 @@ var Response = function () {
         throw new Error('Invalid argument given to set status. Expected number, got ' + (typeof status === 'undefined' ? 'undefined' : _typeof(status)));
       }
       this._status = status;
+      this._statusMessage = _httpmethods2.default[status];
       this._ok = status >= 200 && status < 300;
     }
 
@@ -1059,6 +1071,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+exports.createEndpointHash = createEndpointHash;
+
 var _endpoint = __webpack_require__(5);
 
 var _endpoint2 = _interopRequireDefault(_endpoint);
@@ -1119,7 +1133,7 @@ var Server = function () {
   _createClass(Server, [{
     key: 'route',
     value: function route() {
-      var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+      var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '/';
       var method = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'GET';
 
       var endpoint = new _endpoint2.default(url, method);
@@ -1270,7 +1284,7 @@ var _response = __webpack_require__(3);
 
 var _response2 = _interopRequireDefault(_response);
 
-var _request = __webpack_require__(6);
+var _request = __webpack_require__(7);
 
 var _request2 = _interopRequireDefault(_request);
 
@@ -1502,6 +1516,79 @@ exports.default = Endpoint;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.default = {
+  100: 'Continue',
+  101: 'Switching Protocols',
+  102: 'Processing',
+  200: 'OK',
+  201: 'Created',
+  202: 'Accepted',
+  203: 'Non-Authoritative Information',
+  204: 'No Content',
+  205: 'Reset Content',
+  206: 'Partial Content',
+  207: 'Multi-Status',
+  208: 'Already Reported',
+  226: 'IM Used',
+  300: 'Multiple Choices',
+  301: 'Moved Permanently',
+  302: 'Found',
+  303: 'See Other',
+  304: 'Not Modified',
+  305: 'Use Proxy',
+  307: 'Temporary Redirect',
+  308: 'Permanent Redirect',
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  402: 'Payment Required',
+  403: 'Forbidden',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  406: 'Not Acceptable',
+  407: 'Proxy Authentication Required',
+  408: 'Request Timeout',
+  409: 'Conflict',
+  410: 'Gone',
+  411: 'Length Required',
+  412: 'Precondition Failed',
+  413: 'Payload Too Large',
+  414: 'URI Too Long',
+  415: 'Unsupported Media Type',
+  416: 'Range Not Satisfiable',
+  417: 'Expectation Failed',
+  421: 'Misdirected Request',
+  422: 'Unprocessable Entity',
+  423: 'Locked',
+  424: 'Failed Dependency',
+  426: 'Upgrade Required',
+  427: 'Unassigned',
+  428: 'Precondition Required',
+  429: 'Too Many Requests',
+  431: 'Request Header Fields Too Large',
+  451: 'Unavailable For Legal Reasons',
+  500: 'Internal Server Error',
+  501: 'Not Implemented',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
+  505: 'HTTP Version Not Supported',
+  506: 'Variant Also Negotiates',
+  507: 'Insufficient Storage',
+  508: 'Loop Detected',
+  510: 'Not Extended',
+  511: 'Network Authentication Required'
+};
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1597,6 +1684,10 @@ var Request = function () {
 
       return new Promise(function (resolve, reject) {
         try {
+          // Resolve with an empty object is body is not truthy
+          if (!_this.body) {
+            resolve({});
+          }
           // If we already have a parsed json-object, return it
           if (_this.body.constructor === Object) {
             resolve(_this.body);
@@ -1730,7 +1821,7 @@ var Request = function () {
 exports.default = Request;
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1798,7 +1889,7 @@ exports.parse = querystring;
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1843,7 +1934,7 @@ module.exports = function required(port, protocol) {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1904,7 +1995,7 @@ module.exports = function lolcation(loc) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

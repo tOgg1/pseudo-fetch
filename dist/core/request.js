@@ -98,6 +98,10 @@ var Request = function () {
 
       return new Promise(function (resolve, reject) {
         try {
+          // Resolve with an empty object is body is not truthy
+          if (!_this.body) {
+            resolve({});
+          }
           // If we already have a parsed json-object, return it
           if (_this.body.constructor === Object) {
             resolve(_this.body);
