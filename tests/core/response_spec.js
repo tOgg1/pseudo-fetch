@@ -1,26 +1,36 @@
 /* global describe, it */
 import {expect} from 'chai';
-import Response from '../../src/core/request.js';
+import Response from '../../src/core/response.js';
 
 describe('Response', () => {
   it('should have all fields', () => {
-    const request = new Response();
-    expect(request.method).to.not.equal(undefined);
-    expect(request.headers).to.not.equal(undefined);
-    expect(request.cache).to.not.equal(undefined);
-    expect(request.bodyUsed).to.not.equal(undefined);
-    expect(request.context).to.not.equal(undefined);
-    expect(request.mode).to.not.equal(undefined);
-    expect(request.referrer).to.not.equal(undefined);
-    expect(request.referrerPolicy).to.not.equal(undefined);
-    expect(request.url).to.not.equal(undefined);
+    const response = new Response();
+    expect(response.body).to.not.equal(undefined);
+    expect(response.ok).to.not.equal(undefined);
+    expect(response.status).to.not.equal(undefined);
+    expect(response.statusMessage).to.not.equal(undefined);
+    expect(response.headers).to.not.equal(undefined);
+    expect(response.type).to.not.equal(undefined);
+    expect(response.url).to.not.equal(undefined);
+    expect(response.useFinalUrl).to.not.equal(undefined);
   });
   it('should have all body fields ', () => {
-    const request = new Response();
-    expect(request.json).to.not.equal(undefined);
-    expect(request.blob).to.not.equal(undefined);
-    expect(request.text).to.not.equal(undefined);
-    expect(request.arrayBuffer).to.not.equal(undefined);
-    expect(request.formData).to.not.equal(undefined);
+    const response = new Response();
+    expect(response.json).to.not.equal(undefined);
+    expect(response.blob).to.not.equal(undefined);
+    expect(response.text).to.not.equal(undefined);
+    expect(response.arrayBuffer).to.not.equal(undefined);
+    expect(response.formData).to.not.equal(undefined);
+  });
+  it('should set statusMessage when status is set', () => {
+      const response = new Response();
+      response.status = 201;
+      expect(response.statusMessage).to.equal('Created');
+  });
+  it('should parse json', () => {
+      
+  });
+  it('should parse text', () => {
+      
   });
 });
