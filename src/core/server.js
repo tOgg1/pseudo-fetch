@@ -19,7 +19,7 @@ export function createEndpointHash(url, method) {
  *
  * @class PseudoServer
  */
-export default class Server {
+class Server {
 
   /**
    * Constructor.
@@ -140,3 +140,5 @@ export default class Server {
     return endpoint._call(url, config);
   }
 }
+
+export default Server;
