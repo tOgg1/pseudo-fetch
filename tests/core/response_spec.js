@@ -27,10 +27,19 @@ describe('Response', () => {
       response.status = 201;
       expect(response.statusMessage).to.equal('Created');
   });
-  it('should parse json', () => {
-      
+  it('should parse json when its an object', () => {
+      const response = new Response();
+      response.body = {a: 'b'};
+      return expect(response.json()).to.eventually.deep.equal({a: 'b'});
+  });
+  it('should parse json when its a string', () => {
+      const response = new Response();
+      response.body = '{"a": "b"}';
+      return expect(response.json()).to.eventually.deep.equal({a: 'b'});
   });
   it('should parse text', () => {
-      
+      const response = new Response();
+      response.body = '{a: "b"}';
+      return expect(response.text()).to.eventually.deep.equal('{a: "b"}');
   });
 });

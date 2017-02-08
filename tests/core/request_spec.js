@@ -23,4 +23,19 @@ describe('Request', () => {
     expect(request.arrayBuffer).to.not.equal(undefined);
     expect(request.formData).to.not.equal(undefined);
   });
+  it('should parse json when its an object', () => {
+      const request = new Request();
+      request.body = {a: 'b'};
+      return expect(request.json()).to.eventually.deep.equal({a: 'b'});
+  });
+  it('should parse json when its a string', () => {
+      const request = new Request();
+      request.body = '{"a": "b"}';
+      return expect(request.json()).to.eventually.deep.equal({a: 'b'});
+  });
+  it('should parse text', () => {
+      const request = new Request();
+      request.body = '{a: "b"}';
+      return expect(request.text()).to.eventually.deep.equal('{a: "b"}');
+  });
 });
