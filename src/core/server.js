@@ -41,7 +41,7 @@ export default class Server {
    * @param  {String} method  The method it accepts requests to. Typically GET/POST etc.
    * @return {Endpoint} The resulting endpoint.
    */
-  route(url='', method='GET') {
+  route(url='/', method='GET') {
     const endpoint = new Endpoint(url, method);
     const hash = createEndpointHash(url, method);
     if (hash in this.endpoints) {
